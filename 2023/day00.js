@@ -1,4 +1,4 @@
-const rl = require("node:readline");
+const readLine = require("node:readline");
 const fs = require('node:fs');
 
 const stream = fs.createReadStream("data/data.txt", "utf-8");
