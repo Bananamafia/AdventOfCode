@@ -5,18 +5,23 @@ const stream = fs.createReadStream("data/day02.txt", "utf-8");
 const rl = readLine.createInterface(stream);
 
 let indexSum = 0;
+let powerSum = 0;
 
 rl.on("line", (line) => {
 
     const game = getGame(line);
 
-    if (isGameValid(game, 14, 13, 12)){
+    if (isGameValid(game, 14, 13, 12)) {
         indexSum += game.id;
     }
+
+    const miniumSet = getMinimumSet(game);
+    powerSum += getSetPower(miniumSet);
 })
 
 rl.on("close", () => {
-    console.log(indexSum);
+    //console.log(indexSum);
+    console.log(powerSum);
 });
 
 
@@ -89,4 +94,23 @@ function isGameValid(game, maxBlueCount, maxGreenCount, maxRedCount) {
     }
 
     return true;
+}
+
+function getMinimumSet(game) {
+    let minimumBlueCount = 0;
+    let minimumGreenCount = 0;
+    let minimumRedCount = 0;
+
+    game.gameSets.forEach(gameSet => {
+
+        minimumBlueCount = Math.max(minimumBlueCount, gameSet.blueCount);
+        minimumGreenCount = Math.max(minimumGreenCount, gameSet.greenCount);
+        minimumRedCount = Math.max(minimumRedCount, gameSet.redCount);
+    });
+
+    return { blueCount: minimumBlueCount, greenCount: minimumGreenCount, redCount: minimumRedCount };
+}
+
+function getSetPower(gameSet) {
+    return gameSet.blueCount * gameSet.greenCount * gameSet.redCount;
 }
