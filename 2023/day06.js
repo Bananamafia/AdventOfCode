@@ -4,9 +4,11 @@ const fs = require('node:fs');
 const stream = fs.createReadStream("data/day06.txt", "utf-8");
 const rl = readLine.createInterface(stream);
 
-let value1 = 0;
-let value2 = 0;
 
+class Race {
+    time;
+    distance;
+}
 
 function calculateDistance(raceDuration, pressDuration) {
     return (raceDuration - pressDuration) * pressDuration;
@@ -31,8 +33,12 @@ function getPossibleWinCounts(minDurationToPress, maxDurationToPress) {
 }
 
 const races = [];
+let mainRace = new Race();
+mainRace.time = "";
+mainRace.distance = "";
 
 rl.on("line", (line) => {
+
     const titleValueSplit = line.split(':');
     const values = titleValueSplit[1].replace(/\s+/g, ' ').trim().split(' ');
 
@@ -45,6 +51,8 @@ rl.on("line", (line) => {
             }
 
             races[i].time = parseInt(value);
+
+            mainRace.time += value;
         }
     }
     else if (titleValueSplit[0] == "Distance") {
@@ -56,6 +64,7 @@ rl.on("line", (line) => {
             }
 
             races[i].distance = parseInt(value);
+            mainRace.distance += value;
         }
     }
 
@@ -72,9 +81,11 @@ rl.on("close", () => {
     }
 
     console.log(solution);
-});
 
-class Race {
-    time;
-    distance;
-}
+    const mainRaceDistance = parseInt(mainRace.distance);
+    const mainRaceDuration = parseInt(mainRace.time);
+    const timesToBeatMainRace = getTimesToBeatRecord(mainRaceDuration, mainRaceDistance);
+    const solution2 = getPossibleWinCounts(timesToBeatMainRace.minDuration, timesToBeatMainRace.maxDuration);
+    console.log(solution2);
+
+});
