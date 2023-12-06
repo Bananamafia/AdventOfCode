@@ -37,6 +37,25 @@ rl.on("close", () => {
 
     locations.sort(compareNumbers);
     console.log(locations[0]);
+
+
+    // Caution: kinda bruteforce
+    let lowest = Infinity;
+    for (let i = 0; i < seedStrings.length; i += 2) {
+        const seedStartingIndex = parseInt(seedStrings[i]);
+        const seedRange = parseInt(seedStrings[i + 1]);
+
+        for (let j = 0; j < seedRange; j++) {
+            let tempLowest = getLocationForSeed(seedStartingIndex + j);
+
+            if (tempLowest < lowest) {
+                lowest = tempLowest;
+            }
+        }
+    }
+
+    console.log(lowest);
+
 });
 
 function ProcessSeedLine(line) {
@@ -81,6 +100,16 @@ function SetRangesToCurrentMapping() {
     }
 }
 
+function getLocationForSeed(seed) {
+    let currentMapInput = new MapInput(seed, "seed");
+
+    while (currentMapInput.sourceName) {
+        currentMapInput = getNextValueAndDestination(currentMapInput);
+    }
+
+    return currentMapInput.input;
+}
+
 function getLocationsForSeeds(seedStrings) {
 
     const locations = [];
@@ -88,13 +117,7 @@ function getLocationsForSeeds(seedStrings) {
     for (let i = 0; i < seedStrings.length; i++) {
         const seedString = seedStrings[i];
         const seed = parseInt(seedString);
-        let currentMapInput = new MapInput(seed, "seed");
-
-        while (currentMapInput.sourceName) {
-            currentMapInput = getNextValueAndDestination(currentMapInput);
-        }
-
-        locations.push(currentMapInput.input);
+        locations.push(getLocationForSeed(seed));
     }
 
     return locations;
@@ -109,7 +132,7 @@ function getNextValueAndDestination(mapInput) {
 
     const ranges = currentMapping.get(RANGES);
     const destination = currentMapping.get(DESTINATION);
- 
+
     for (let i = 0; i < ranges.length; i++) {
         const range = ranges[i];
 
@@ -123,7 +146,7 @@ function getNextValueAndDestination(mapInput) {
 
 function compareNumbers(a, b) {
     return a - b;
-  }
+}
 
 class MapInput {
     input;
