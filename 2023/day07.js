@@ -53,8 +53,8 @@ function compareCards(a, b) {
     }
 
     for (let i = 0; i < a.cards.length; i++) {
-        const cardAScore = getSecondaryScoreBySingleCard(a.cards[i]);
-        const cardBScore = getSecondaryScoreBySingleCard(b.cards[i]);
+        const cardAScore = getSecondaryScoreBySingleCardWithJokers(a.cards[i]);
+        const cardBScore = getSecondaryScoreBySingleCardWithJokers(b.cards[i]);
 
         if (cardAScore != cardBScore) {
             return cardAScore - cardBScore;
@@ -68,18 +68,28 @@ function getSecondaryScoreBySingleCard(card) {
     return secondaryScoreMap.get(card);
 }
 
+function getSecondaryScoreBySingleCardWithJokers(card) {
+    if (card == "J") {
+        return 1;
+    }
+
+    return getSecondaryScoreBySingleCard(card);
+}
+
 
 
 class CamelCardSet {
     cards;
     bid;
     #cardCounts;
+    #jokerCount = 0;
 
     constructor(cards, bid) {
         this.cards = cards;
         this.bid = bid;
 
-        this.#readCards(cards)
+        this.#readCards(cards);
+        this.#addJokers();
     }
 
     #readCards(cards) {
@@ -87,6 +97,11 @@ class CamelCardSet {
 
         for (let i = 0; i < cards.length; i++) {
             const card = cards[i];
+
+            if (card == "J") {
+                this.#jokerCount++;
+                continue;
+            }
 
             const foundCardCount = cardMap.get(card)
             if (foundCardCount) {
@@ -98,6 +113,19 @@ class CamelCardSet {
         }
 
         this.#cardCounts = Array.from(cardMap.values());
+    }
+
+    #addJokers() {
+        if (this.#jokerCount == 0) {
+            return;
+        }
+
+        const orderdCardCounts = this.#cardCounts.sort().reverse();
+        orderdCardCounts[0] = orderdCardCounts[0] + this.#jokerCount;
+
+        this.#cardCounts = orderdCardCounts;
+
+        const temp = this.getPrimaryScore();
     }
 
     calculateWinning(index) {
@@ -129,7 +157,7 @@ class CamelCardSet {
     }
 
     #fiveOfAKind() {
-        if (this.#cardCounts.includes(5)) {
+        if (this.#cardCounts.includes(5) || this.#jokerCount == 5) {
             return true;
         }
         return false;
