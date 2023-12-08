@@ -11,8 +11,6 @@ let stepCount = 0;
 let currentNodeId = "AAA";
 const DESTINATION = "ZZZ";
 
-let value2 = 0;
-
 rl.on("line", (line) => {
 
     if (!directionInstructions) {
@@ -29,9 +27,70 @@ rl.on("line", (line) => {
 })
 
 rl.on("close", () => {
-    travel();
-    console.log(stepCount);
+
+    const startingNodes = getStartingNodes();
+    const moveCountsToReachDestination = [];
+
+    for (let i = 0; i < startingNodes.length; i++) {
+        const startingNode = startingNodes[i];
+        moveCountsToReachDestination.push(getMoveCountForPossibleFinalDestination(startingNode));
+    }
+
+    console.log(calculateLCD(moveCountsToReachDestination));
 });
+
+function gcd(a, b) {
+    if (b == 0) {
+        return a;
+    }
+    return gcd(b, a % b);
+}
+
+function lcd(a, b) {
+    return (a * b) / gcd(a, b);
+}
+
+function calculateLCD(numbers) {
+    if (numbers.length < 2) {
+        return NaN;
+    }
+
+    let result = lcd(numbers[0], numbers[1]);
+
+    for (let i = 0; i < numbers.length; i++) {
+        result = lcd(result, numbers[i]);
+    }
+
+    return result;
+}
+
+function getStartingNodes() {
+    const allNodes = Array.from(networkNodes.keys());
+    return allNodes.filter(node => node.endsWith('A'));
+}
+
+function getMoveCountForPossibleFinalDestination(networkNodeId) {
+
+    let tempNodeId = networkNodeId;
+    let moveCount = 0;
+
+    do {
+        for (let i = 0; i < directionInstructions.length; i++) {
+            const direction = directionInstructions[i];
+            const currentNode = networkNodes.get(tempNodeId);
+
+            tempNodeId = direction == "L" ? currentNode.left : currentNode.right;
+            moveCount++;
+
+            if (tempNodeId.endsWith('Z')) {
+                break;
+            }
+        }
+
+    } while (!tempNodeId.endsWith("Z"));
+
+    return moveCount;
+}
 
 function travel() {
     while (currentNodeId != DESTINATION) {
