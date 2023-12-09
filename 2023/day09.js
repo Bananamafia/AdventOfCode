@@ -8,8 +8,9 @@ const measureHistories = [];
 let sum = 0;
 
 rl.on("line", (line) => {
-    const historyValues = line.split(' ').reverse().map(value => parseInt(value));
-    measureHistories.push(historyValues);
+    const historyValuesNext = line.split(' ').reverse().map(value => parseInt(value));
+    const historyValuesPrevious = line.split(' ').map(value => parseInt(value));
+    measureHistories.push(historyValuesPrevious);
 })
 
 rl.on("close", () => {
