@@ -41,12 +41,12 @@ function setGalaxyCoordinates(line) {
 }
 
 function main() {
-    updateGalaxyCoordinatesByExpand(galaxyCoordinates, rowsWithGalaxy, columnsWithGalaxy)
+    updateGalaxyCoordinatesByExpand(galaxyCoordinates, rowsWithGalaxy, columnsWithGalaxy, 1000000)
     const minimumDistance = calculateMinimumDistanceBetweenGalaxies(galaxyCoordinates);
     console.log(minimumDistance);
 }
 
-function updateGalaxyCoordinatesByExpand(galaxyCoordinates, rowsWithGalaxy, columnsWithGalaxy) {
+function updateGalaxyCoordinatesByExpand(galaxyCoordinates, rowsWithGalaxy, columnsWithGalaxy, expandFactor) {
     for (let i = columnCount - 1; i >= 0; i--) {
         if (columnsWithGalaxy.has(i)) {
             continue;
@@ -55,7 +55,7 @@ function updateGalaxyCoordinatesByExpand(galaxyCoordinates, rowsWithGalaxy, colu
         const affectedGalaxies = galaxyCoordinates.filter(galaxy => galaxy.x > i);
         for (let j = 0; j < affectedGalaxies.length; j++) {
             const galaxy = affectedGalaxies[j];
-            galaxy.x = galaxy.x + 1;            
+            galaxy.x = galaxy.x + expandFactor - 1;
         }
     }
 
@@ -67,7 +67,7 @@ function updateGalaxyCoordinatesByExpand(galaxyCoordinates, rowsWithGalaxy, colu
         const affectedGalaxies = galaxyCoordinates.filter(galaxy => galaxy.y > i);
         for (let j = 0; j < affectedGalaxies.length; j++) {
             const galaxy = affectedGalaxies[j];
-            galaxy.y = galaxy.y + 1            
+            galaxy.y = galaxy.y + expandFactor - 1;
         }
     }
 }
