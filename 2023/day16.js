@@ -23,20 +23,87 @@ const facilityMap = [];
 const cache = new Set();
 const queue = [];
 const energizedFields = new Set();
+let maxEnergizedFields = 0;
+
 
 function processLine(line) {
     facilityMap.push(line.split(''));
 }
 
 function main() {
-    let previouseCoordinate = new FacilityCoordinate(-1, 0);
-    let currentCoordinate = new FacilityCoordinate(0, 0);
+    // let previouseCoordinate = new FacilityCoordinate(-1, 0);
+    // let currentCoordinate = new FacilityCoordinate(0, 0);
 
-    processLaser(previouseCoordinate, currentCoordinate);
-    processLaserQueue();
+    // processLaser(previouseCoordinate, currentCoordinate);
+    // processLaserQueue();
 
-    console.log(energizedFields.size);
+    processDifferentStartingLocations()
+    console.log(maxEnergizedFields);
 }
+
+function processDifferentStartingLocations() {
+    processLeftColumns();
+    processRightColumns();
+    processTopColumns();
+    processBottomColumns();
+}
+
+function processLeftColumns() {
+    for (let i = 0; i < facilityMap.length; i++) {
+        energizedFields.clear();
+        cache.clear();
+
+        let previouseCoordinate = new FacilityCoordinate(-1, i);
+        let currentCoordinate = new FacilityCoordinate(0, i);
+
+        processLaser(previouseCoordinate, currentCoordinate);
+        processLaserQueue();
+        maxEnergizedFields = Math.max(maxEnergizedFields, energizedFields.size);
+    }
+}
+
+function processRightColumns() {
+    for (let i = 0; i < facilityMap.length; i++) {
+        energizedFields.clear();
+        cache.clear();
+
+        let previouseCoordinate = new FacilityCoordinate(facilityMap[0].length, i);
+        let currentCoordinate = new FacilityCoordinate(facilityMap[0].length - 1, i);
+
+        processLaser(previouseCoordinate, currentCoordinate);
+        processLaserQueue();
+        maxEnergizedFields = Math.max(maxEnergizedFields, energizedFields.size);
+    }
+}
+
+function processTopColumns() {
+    for (let i = 0; i < facilityMap[0].length; i++) {
+        energizedFields.clear();
+        cache.clear();
+
+        let previouseCoordinate = new FacilityCoordinate(i, -1);
+        let currentCoordinate = new FacilityCoordinate(i, 0);
+
+        processLaser(previouseCoordinate, currentCoordinate);
+        processLaserQueue();
+        maxEnergizedFields = Math.max(maxEnergizedFields, energizedFields.size);
+    }
+}
+
+function processBottomColumns() {
+    for (let i = 0; i < facilityMap[0].length; i++) {
+        energizedFields.clear();
+        cache.clear();
+
+        let previouseCoordinate = new FacilityCoordinate(i, facilityMap.length);
+        let currentCoordinate = new FacilityCoordinate(i, facilityMap.length - 1);
+
+        processLaser(previouseCoordinate, currentCoordinate);
+        processLaserQueue();
+        maxEnergizedFields = Math.max(maxEnergizedFields, energizedFields.size);
+    }
+}
+
 
 function processLaserQueue() {
     while (queue.length > 0) {
